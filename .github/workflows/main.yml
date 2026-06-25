@@ -4,26 +4,26 @@ on: [push, pull_request]
 
 jobs:
   build:
-    runs-on: windows-latest  # Sử dụng máy ảo Windows
+    runs-on: windows-latest
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4 # Cập nhật checkout lên v4
 
     - name: Setup MSBuild
-      uses: microsoft/setup-msbuild@v1.1
+      uses: microsoft/setup-msbuild@v2 # Cập nhật msbuild lên v2
 
     - name: Setup NuGet
-      uses: NuGet/setup-nuget@v1.1
+      uses: NuGet/setup-nuget@v2 # Cập nhật nuget lên v2
 
     - name: Restore NuGet packages
-      run: nuget restore BorderlessGaming.sln # Thay bằng tên tệp .sln của bạn
+      run: nuget restore BorderlessGaming.sln 
 
     - name: Build Solution
       run: msbuild BorderlessGaming.sln /p:Configuration=Release /p:Platform="Any CPU"
 
     - name: Upload Build Artifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4 # ĐÃ CẬP NHẬT LÊN V4
       with:
         name: Compiled-App
         path: |
