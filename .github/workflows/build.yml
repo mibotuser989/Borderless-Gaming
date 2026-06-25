@@ -1,0 +1,40 @@
+name: Build Borderless Gaming
+
+on:
+  push:
+    branches: [ master, main ]
+  pull_request:
+    branches: [ master, main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    - name: Setup MSBuild
+      uses: microsoft/setup-msbuild@v2
+
+    - name: Setup NuGet
+      uses: nuget/setup-nuget@v1
+
+    - name: Restore NuGet Packages
+      run: nuget restore BorderlessGaming.sln
+
+    - name: Build Solution
+      run: |
+        msbuild BorderlessGaming.sln /p:Configuration=Release /p:Platform="Any CPU" /p:PostBuildEvent=
+      # We skip PostBuildEvent because it tries to sign the binary with a certificate that isn't on the runner.
+
+    - name: Upload Build Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: BorderlessGaming-Release
+        path: |
+          BorderlessGaming/bin/Release/BorderlessGaming.exe
+          BorderlessGaming/bin/Release/*.dll
+          Languages/
+          data/
