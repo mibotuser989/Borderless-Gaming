@@ -6,22 +6,24 @@ on:
   pull_request:
     branches: [ "master", "main" ]
 
-
-
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: windows-latest  # Dự án .NET Desktop thường cần Windows
+
     steps:
-    - uses: actions/checkout@v4
-    
-    - name: Setup MSBuild
-      uses: microsoft/setup-msbuild@v2
+    - name: Checkout code
+      uses: actions/checkout@v4
 
-    - name: Setup NuGet
-      uses: NuGet/setup-nuget@v2
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x # Thay đổi phiên bản phù hợp với dự án của bạn
 
-    - name: Restore NuGet Packages
-      run: nuget restore BorderlessGaming.sln
+    - name: Restore dependencies
+      run: dotnet restore BorderlessGaming.sln
 
-    - name: Build Solution
-      run: msbuild BorderlessGaming.sln /p:Configuration=Release
+    - name: Build
+      run: dotnet build BorderlessGaming.sln --configuration Release --no-restore
+
+    - name: Test (Tùy chọn)
+      run: dotnet test BorderlessGaming.sln --no-build --verbosity normal
