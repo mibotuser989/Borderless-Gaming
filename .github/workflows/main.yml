@@ -1,0 +1,29 @@
+name: Build .NET Project
+
+on:
+  push:
+    branches: [ "master", "main" ]
+  pull_request:
+    branches: [ "master", "main" ]
+
+jobs:
+  build:
+    runs-on: windows-latest  # Dự án .NET Desktop thường cần Windows
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.28 # Thay đổi phiên bản phù hợp với dự án của bạn
+
+    - name: Restore dependencies
+      run: dotnet restore BorderlessGaming.sln
+
+    - name: Build
+      run: dotnet build BorderlessGaming.sln --configuration Release --no-restore
+
+    - name: Test (Tùy chọn)
+      run: dotnet test BorderlessGaming.sln --no-build --verbosity normal
