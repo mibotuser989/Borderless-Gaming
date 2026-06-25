@@ -1,29 +1,31 @@
-name: Build .NET Project
+name: Build Project
 
-on:
-  push:
-    branches: [ "master", "main" ]
-  pull_request:
-    branches: [ "master", "main" ]
+on: [push, pull_request]
 
 jobs:
   build:
-    runs-on: windows-latest  # Dự án .NET Desktop thường cần Windows
+    runs-on: windows-latest  # Sử dụng máy ảo Windows
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v4
+      uses: actions/checkout@v3
 
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v4
+    - name: Setup MSBuild
+      uses: microsoft/setup-msbuild@v1.1
+
+    - name: Setup NuGet
+      uses: NuGet/setup-nuget@v1.1
+
+    - name: Restore NuGet packages
+      run: nuget restore BorderlessGaming.sln # Thay bằng tên tệp .sln của bạn
+
+    - name: Build Solution
+      run: msbuild BorderlessGaming.sln /p:Configuration=Release /p:Platform="Any CPU"
+
+    - name: Upload Build Artifacts
+      uses: actions/upload-artifact@v3
       with:
-        dotnet-version: 8.0.x # Thay đổi phiên bản phù hợp với dự án của bạn
-
-    - name: Restore dependencies
-      run: dotnet restore BorderlessGaming.sln
-
-    - name: Build
-      run: dotnet build BorderlessGaming.sln --configuration Release --no-restore
-
-    - name: Test (Tùy chọn)
-      run: dotnet test BorderlessGaming.sln --no-build --verbosity normal
+        name: Compiled-App
+        path: |
+          **/bin/Release/*.exe
+          **/bin/Release/*.dll
